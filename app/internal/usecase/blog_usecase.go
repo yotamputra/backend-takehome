@@ -130,6 +130,17 @@ func (c *BlogUseCase) Delete(id int, currentUserID int) error {
 }
 
 func (c *BlogUseCase) toBlogResponse(blog *entity.Blog) *model.BlogResponse {
+	comments := make([]model.CommentResponse, len(blog.Comments))
+	for i, comment := range blog.Comments {
+		comments[i] = model.CommentResponse{
+			ID:         comment.ID,
+			PostID:     comment.PostID,
+			AuthorName: comment.AuthorName,
+			Content:    comment.Content,
+			CreatedAt:  comment.CreatedAt.Unix(),
+		}
+	}
+
 	return &model.BlogResponse{
 		ID:      blog.ID,
 		Title:   blog.Title,
@@ -143,5 +154,6 @@ func (c *BlogUseCase) toBlogResponse(blog *entity.Blog) *model.BlogResponse {
 		},
 		CreatedAt: blog.CreatedAt,
 		UpdatedAt: blog.UpdatedAt,
+		Comments:  comments,
 	}
 }

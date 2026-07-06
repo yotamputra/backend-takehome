@@ -10,4 +10,6 @@ type Blog struct {
 	Author    User      `gorm:"foreignKey:AuthorID" json:"author"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	
+	Comments  []Comment `gorm:"foreignKey:PostID" json:"comments"`
 }

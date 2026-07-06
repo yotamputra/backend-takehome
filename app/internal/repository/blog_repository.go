@@ -23,7 +23,7 @@ func (r *BlogRepository) Create(db *gorm.DB, blog *entity.Blog) error {
 
 func (r *BlogRepository) FindById(db *gorm.DB, id int) (*entity.Blog, error) {
 	var blog entity.Blog
-	if err := db.Preload("Author").First(&blog, id).Error; err != nil {
+	if err := db.Preload("Author").Preload("Comments").First(&blog, id).Error; err != nil {
 		return nil, err
 	}
 	return &blog, nil
@@ -31,7 +31,7 @@ func (r *BlogRepository) FindById(db *gorm.DB, id int) (*entity.Blog, error) {
 
 func (r *BlogRepository) FindAll(db *gorm.DB) ([]entity.Blog, error) {
 	var blogs []entity.Blog
-	if err := db.Preload("Author").Find(&blogs).Error; err != nil {
+	if err := db.Preload("Author").Preload("Comments").Find(&blogs).Error; err != nil {
 		return nil, err
 	}
 	return blogs, nil

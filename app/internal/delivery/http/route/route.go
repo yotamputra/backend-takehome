@@ -16,8 +16,9 @@ type RouteConfig struct {
 	Config *viper.Viper
 	Log    *zerolog.Logger
 
-	AuthController *http.AuthController
-	BlogController *http.BlogController
+	AuthController    *http.AuthController
+	BlogController    *http.BlogController
+	CommentController *http.CommentController
 }
 
 func (c *RouteConfig) Setup() {
@@ -58,6 +59,10 @@ func (c *RouteConfig) SetupPostRoute(apiPrefix string) {
 	c.Mux.Handle("POST "+postPrefix, authMiddleware.Handle(netHttp.HandlerFunc(c.BlogController.Create)))
 	c.Mux.Handle("PUT "+postPrefix+"/{id}", authMiddleware.Handle(netHttp.HandlerFunc(c.BlogController.Update)))
 	c.Mux.Handle("DELETE "+postPrefix+"/{id}", authMiddleware.Handle(netHttp.HandlerFunc(c.BlogController.Delete)))
+
+	// Comment routes
+	c.Mux.HandleFunc("GET "+postPrefix+"/{id}/comments", c.CommentController.GetByPostId)
+	c.Mux.Handle("POST "+postPrefix+"/{id}/comments", authMiddleware.Handle(netHttp.HandlerFunc(c.CommentController.Create)))
 }
 
 // HealthCheck godoc

@@ -93,8 +93,9 @@ func (c *AuthUseCase) Login(request *model.LoginRequest) (*model.LoginResponse, 
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": user.ID,
-		"exp": time.Now().Add(expirationTime).Unix(),
+		"sub":  user.ID,
+		"name": user.Name,
+		"exp":  time.Now().Add(expirationTime).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(c.Config.GetString("JWT_ACCESS_SECRET")))

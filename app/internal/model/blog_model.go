@@ -17,7 +17,9 @@ type BlogResponse struct {
 	ID        int          `json:"id"`
 	Title     string       `json:"title"`
 	Content   string       `json:"content"`
-	Author    UserResponse `json:"author"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
+	Author    UserResponse      `json:"author"`
+	CreatedAt time.Time         `json:"created_at"`
+	UpdatedAt time.Time         `json:"updated_at"`
+	
+	Comments  []CommentResponse `json:"comments"`
 }

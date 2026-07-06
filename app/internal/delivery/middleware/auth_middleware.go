@@ -55,8 +55,14 @@ func (m *AuthMiddleware) Handle(next http.Handler) http.Handler {
 			return
 		}
 
+		name, ok := claims["name"].(string)
+		if !ok {
+			name = "Unknown"
+		}
+
 		auth := &model.Auth{
-			ID: int(sub),
+			ID:   int(sub),
+			Name: name,
 		}
 
 		ctx := context.WithValue(r.Context(), "auth", auth)

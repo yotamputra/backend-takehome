@@ -4,6 +4,10 @@ definitions:
     properties:
       author:
         $ref: '#/definitions/model.UserResponse'
+      comments:
+        items:
+          $ref: '#/definitions/model.CommentResponse'
+        type: array
       content:
         type: string
       created_at:
@@ -15,6 +19,19 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.CommentResponse:
+    properties:
+      author_name:
+        type: string
+      content:
+        type: string
+      created_at:
+        type: integer
+      id:
+        type: integer
+      post_id:
+        type: integer
+    type: object
   model.CreateBlogRequest:
     properties:
       content:
@@ -25,6 +42,14 @@ definitions:
     required:
     - content
     - title
+    type: object
+  model.CreateCommentRequest:
+    properties:
+      content:
+        minLength: 1
+        type: string
+    required:
+    - content
     type: object
   model.LoginRequest:
     properties:
@@ -106,10 +131,28 @@ definitions:
       message:
         type: string
     type: object
+  model.WebResponse-array_model_CommentResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.CommentResponse'
+        type: array
+      errors: {}
+      message:
+        type: string
+    type: object
   model.WebResponse-model_BlogResponse:
     properties:
       data:
         $ref: '#/definitions/model.BlogResponse'
+      errors: {}
+      message:
+        type: string
+    type: object
+  model.WebResponse-model_CommentResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.CommentResponse'
       errors: {}
       message:
         type: string
@@ -328,6 +371,73 @@ paths:
       summary: Update a blog post
       tags:
       - posts
+  /api/posts/{id}/comments:
+    get:
+      description: List all comments for a blog post
+      parameters:
+      - description: Blog ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.WebResponse-array_model_CommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+      summary: List all comments for a blog post
+      tags:
+      - comments
+    post:
+      consumes:
+      - application/json
+      description: Add a comment to a blog post
+      parameters:
+      - description: Blog ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Create Comment Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateCommentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.WebResponse-model_CommentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Add a comment to a blog post
+      tags:
+      - comments
   /health:
     get:
       description: Check if the server is running
