@@ -21,7 +21,7 @@ func (r *CommentRepository) Create(db *gorm.DB, comment *entity.Comment) error {
 	return db.Create(comment).Error
 }
 
-func (r *CommentRepository) FindByPostId(db *gorm.DB, postId int) ([]entity.Comment, error) {
+func (r *CommentRepository) FindByPostId(db *gorm.DB, postId string) ([]entity.Comment, error) {
 	var comments []entity.Comment
 	err := db.Where("post_id = ?", postId).Order("created_at desc").Find(&comments).Error
 	return comments, err

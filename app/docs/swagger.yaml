@@ -13,7 +13,7 @@ definitions:
       created_at:
         type: string
       id:
-        type: integer
+        type: string
       title:
         type: string
       updated_at:
@@ -26,11 +26,11 @@ definitions:
       content:
         type: string
       created_at:
-        type: integer
+        type: string
       id:
-        type: integer
+        type: string
       post_id:
-        type: integer
+        type: string
     type: object
   model.CreateBlogRequest:
     properties:
@@ -108,7 +108,7 @@ definitions:
       email:
         type: string
       id:
-        type: integer
+        type: string
       name:
         type: string
       updated_at:
@@ -284,7 +284,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -316,7 +316,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -340,7 +340,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Update Blog Request
         in: body
         name: request
@@ -379,7 +379,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -407,7 +407,7 @@ paths:
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       - description: Create Comment Request
         in: body
         name: request

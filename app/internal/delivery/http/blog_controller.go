@@ -6,7 +6,6 @@ import (
 	"app/internal/usecase"
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/rs/zerolog"
@@ -63,19 +62,18 @@ func (c *BlogController) Create(w http.ResponseWriter, r *http.Request) {
 // @Description  Get a blog post by ID
 // @Tags         posts
 // @Produce      json
-// @Param        id path int true "Blog ID"
+// @Param        id path string true "Blog ID"
 // @Success      200 {object} model.WebResponse[model.BlogResponse]
 // @Failure      404 {object} model.WebResponse[any]
 // @Router       /api/posts/{id} [get]
 func (c *BlogController) GetById(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
+	if idStr == "" {
 		c.jsonResponse(w, http.StatusBadRequest, model.WebResponse[any]{Errors: "invalid ID format"})
 		return
 	}
 
-	response, err := c.BlogUseCase.GetById(id)
+	response, err := c.BlogUseCase.GetById(idStr)
 	if err != nil {
 		c.jsonResponse(w, http.StatusNotFound, model.WebResponse[any]{Errors: err.Error()})
 		return
@@ -107,7 +105,7 @@ func (c *BlogController) GetAll(w http.ResponseWriter, r *http.Request) {
 // @Tags         posts
 // @Accept       json
 // @Produce      json
-// @Param        id path int true "Blog ID"
+// @Param        id path string true "Blog ID"
 // @Param        request body model.UpdateBlogRequest true "Update Blog Request"
 // @Security     BearerAuth
 // @Success      200 {object} model.WebResponse[model.BlogResponse]
@@ -123,8 +121,7 @@ func (c *BlogController) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	idStr := r.PathValue("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
+	if idStr == "" {
 		c.jsonResponse(w, http.StatusBadRequest, model.WebResponse[any]{Errors: "invalid ID format"})
 		return
 	}
@@ -134,7 +131,7 @@ func (c *BlogController) Update(w http.ResponseWriter, r *http.Request) {
 		c.jsonResponse(w, http.StatusBadRequest, model.WebResponse[any]{Errors: "invalid request body"})
 		return
 	}
-	request.ID = id
+	request.ID = idStr
 
 	response, err := c.BlogUseCase.Update(&request, user.ID)
 	if err != nil {
@@ -156,7 +153,7 @@ func (c *BlogController) Update(w http.ResponseWriter, r *http.Request) {
 // @Description  Delete a blog post
 // @Tags         posts
 // @Produce      json
-// @Param        id path int true "Blog ID"
+// @Param        id path string true "Blog ID"
 // @Security     BearerAuth
 // @Success      200 {object} model.WebResponse[any]
 // @Failure      400 {object} model.WebResponse[any]
@@ -171,13 +168,12 @@ func (c *BlogController) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	idStr := r.PathValue("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
+	if idStr == "" {
 		c.jsonResponse(w, http.StatusBadRequest, model.WebResponse[any]{Errors: "invalid ID format"})
 		return
 	}
 
-	if err := c.BlogUseCase.Delete(id, user.ID); err != nil {
+	if err := c.BlogUseCase.Delete(idStr, user.ID); err != nil {
 		status := http.StatusBadRequest
 		if strings.Contains(err.Error(), "forbidden") {
 			status = http.StatusForbidden

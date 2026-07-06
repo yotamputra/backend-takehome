@@ -21,9 +21,9 @@ func (r *BlogRepository) Create(db *gorm.DB, blog *entity.Blog) error {
 	return db.Create(blog).Error
 }
 
-func (r *BlogRepository) FindById(db *gorm.DB, id int) (*entity.Blog, error) {
+func (r *BlogRepository) FindById(db *gorm.DB, id string) (*entity.Blog, error) {
 	var blog entity.Blog
-	if err := db.Preload("Author").Preload("Comments").First(&blog, id).Error; err != nil {
+	if err := db.Preload("Author").Preload("Comments").First(&blog, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &blog, nil

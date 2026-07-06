@@ -176,7 +176,7 @@ const docTemplate = `{
                 "summary": "Get a blog post by ID",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Blog ID",
                         "name": "id",
                         "in": "path",
@@ -217,7 +217,7 @@ const docTemplate = `{
                 "summary": "Update a blog post",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Blog ID",
                         "name": "id",
                         "in": "path",
@@ -276,7 +276,7 @@ const docTemplate = `{
                 "summary": "Delete a blog post",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Blog ID",
                         "name": "id",
                         "in": "path",
@@ -323,7 +323,7 @@ const docTemplate = `{
                 "summary": "List all comments for a blog post",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Blog ID",
                         "name": "id",
                         "in": "path",
@@ -370,7 +370,7 @@ const docTemplate = `{
                 "summary": "Add a comment to a blog post",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Blog ID",
                         "name": "id",
                         "in": "path",
@@ -448,7 +448,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "title": {
                     "type": "string"
@@ -468,13 +468,13 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_at": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "post_id": {
-                    "type": "integer"
+                    "type": "string"
                 }
             }
         },
@@ -587,7 +587,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"

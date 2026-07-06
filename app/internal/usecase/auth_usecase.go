@@ -61,7 +61,7 @@ func (c *AuthUseCase) Register(request *model.RegisterRequest) (*model.UserRespo
 	}
 
 	return &model.UserResponse{
-		ID:        user.ID,
+		ID:        user.ID.String(),
 		Name:      user.Name,
 		Email:     user.Email,
 		CreatedAt: user.CreatedAt,
@@ -93,7 +93,7 @@ func (c *AuthUseCase) Login(request *model.LoginRequest) (*model.LoginResponse, 
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub":  user.ID,
+		"sub":  user.ID.String(),
 		"name": user.Name,
 		"exp":  time.Now().Add(expirationTime).Unix(),
 	})
@@ -108,7 +108,7 @@ func (c *AuthUseCase) Login(request *model.LoginRequest) (*model.LoginResponse, 
 		Token:     tokenString,
 		ExpiresAt: time.Now().Add(expirationTime).Unix(),
 		User: model.UserResponse{
-			ID:        user.ID,
+			ID:        user.ID.String(),
 			Name:      user.Name,
 			Email:     user.Email,
 			CreatedAt: user.CreatedAt,

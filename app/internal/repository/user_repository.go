@@ -29,9 +29,9 @@ func (r *UserRepository) FindByEmail(db *gorm.DB, email string) (*entity.User, e
 	return &user, nil
 }
 
-func (r *UserRepository) FindById(db *gorm.DB, id int) (*entity.User, error) {
+func (r *UserRepository) FindById(db *gorm.DB, id string) (*entity.User, error) {
 	var user entity.User
-	if err := db.First(&user, id).Error; err != nil {
+	if err := db.First(&user, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil

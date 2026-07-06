@@ -8,13 +8,13 @@ type CreateBlogRequest struct {
 }
 
 type UpdateBlogRequest struct {
-	ID      int    `json:"-" validate:"required"`
+	ID      string `json:"-" validate:"required"`
 	Title   string `json:"title" validate:"required,max=255"`
 	Content string `json:"content" validate:"required"`
 }
 
 type BlogResponse struct {
-	ID        int          `json:"id"`
+	ID        string       `json:"id"`
 	Title     string       `json:"title"`
 	Content   string       `json:"content"`
 	Author    UserResponse      `json:"author"`

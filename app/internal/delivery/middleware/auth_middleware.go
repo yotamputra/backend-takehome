@@ -49,7 +49,7 @@ func (m *AuthMiddleware) Handle(next http.Handler) http.Handler {
 			return
 		}
 
-		sub, ok := claims["sub"].(float64)
+		sub, ok := claims["sub"].(string)
 		if !ok {
 			m.unauthorized(w)
 			return
@@ -61,7 +61,7 @@ func (m *AuthMiddleware) Handle(next http.Handler) http.Handler {
 		}
 
 		auth := &model.Auth{
-			ID:   int(sub),
+			ID:   sub,
 			Name: name,
 		}
 

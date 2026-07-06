@@ -6,6 +6,7 @@ import (
 	"app/internal/repository"
 	"errors"
 
+	"github.com/google/uuid"
 	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"
@@ -31,15 +32,15 @@ func NewCommentUseCase(db *gorm.DB, log *zerolog.Logger, validate *validator.Val
 
 func (c *CommentUseCase) toCommentResponse(comment *entity.Comment) *model.CommentResponse {
 	return &model.CommentResponse{
-		ID:         comment.ID,
-		PostID:     comment.PostID,
+		ID:         comment.ID.String(),
+		PostID:     comment.PostID.String(),
 		AuthorName: comment.AuthorName,
 		Content:    comment.Content,
-		CreatedAt:  comment.CreatedAt.Unix(),
+		CreatedAt:  comment.CreatedAt,
 	}
 }
 
-func (c *CommentUseCase) Create(request *model.CreateCommentRequest, postId int, authorName string) (*model.CommentResponse, error) {
+func (c *CommentUseCase) Create(request *model.CreateCommentRequest, postId string, authorName string) (*model.CommentResponse, error) {
 	if err := c.Validate.Struct(request); err != nil {
 		return nil, err
 	}
@@ -54,8 +55,13 @@ func (c *CommentUseCase) Create(request *model.CreateCommentRequest, postId int,
 		return nil, errors.New("internal server error")
 	}
 
+	postUuid, err := uuid.Parse(postId)
+	if err != nil {
+		return nil, errors.New("invalid post id")
+	}
+
 	comment := &entity.Comment{
-		PostID:     postId,
+		PostID:     postUuid,
 		AuthorName: authorName,
 		Content:    request.Content,
 	}
@@ -68,7 +74,7 @@ func (c *CommentUseCase) Create(request *model.CreateCommentRequest, postId int,
 	return c.toCommentResponse(comment), nil
 }
 
-func (c *CommentUseCase) GetByPostId(postId int) ([]model.CommentResponse, error) {
+func (c *CommentUseCase) GetByPostId(postId string) ([]model.CommentResponse, error) {
 	// Verify post exists
 	_, err := c.BlogRepository.FindById(c.DB, postId)
 	if err != nil {

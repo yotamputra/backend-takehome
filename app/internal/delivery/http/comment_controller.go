@@ -6,7 +6,6 @@ import (
 	"app/internal/usecase"
 	"encoding/json"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -32,7 +31,7 @@ func (c *CommentController) jsonResponse(w http.ResponseWriter, code int, payloa
 // @Tags         comments
 // @Accept       json
 // @Produce      json
-// @Param        id path int true "Blog ID"
+// @Param        id path string true "Blog ID"
 // @Param        request body model.CreateCommentRequest true "Create Comment Request"
 // @Security     BearerAuth
 // @Success      200 {object} model.WebResponse[model.CommentResponse]
@@ -48,8 +47,7 @@ func (c *CommentController) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	idStr := r.PathValue("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
+	if idStr == "" {
 		c.jsonResponse(w, http.StatusBadRequest, model.WebResponse[any]{Errors: "invalid ID format"})
 		return
 	}
@@ -60,7 +58,7 @@ func (c *CommentController) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := c.CommentUseCase.Create(&request, id, user.Name)
+	response, err := c.CommentUseCase.Create(&request, idStr, user.Name)
 	if err != nil {
 		status := http.StatusBadRequest
 		if strings.Contains(err.Error(), "not found") {
@@ -78,20 +76,19 @@ func (c *CommentController) Create(w http.ResponseWriter, r *http.Request) {
 // @Description  List all comments for a blog post
 // @Tags         comments
 // @Produce      json
-// @Param        id path int true "Blog ID"
+// @Param        id path string true "Blog ID"
 // @Success      200 {object} model.WebResponse[[]model.CommentResponse]
 // @Failure      400 {object} model.WebResponse[any]
 // @Failure      404 {object} model.WebResponse[any]
 // @Router       /api/posts/{id}/comments [get]
 func (c *CommentController) GetByPostId(w http.ResponseWriter, r *http.Request) {
 	idStr := r.PathValue("id")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
+	if idStr == "" {
 		c.jsonResponse(w, http.StatusBadRequest, model.WebResponse[any]{Errors: "invalid ID format"})
 		return
 	}
 
-	responses, err := c.CommentUseCase.GetByPostId(id)
+	responses, err := c.CommentUseCase.GetByPostId(idStr)
 	if err != nil {
 		status := http.StatusInternalServerError
 		if strings.Contains(err.Error(), "not found") {

@@ -170,7 +170,7 @@
                 "summary": "Get a blog post by ID",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Blog ID",
                         "name": "id",
                         "in": "path",
@@ -211,7 +211,7 @@
                 "summary": "Update a blog post",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Blog ID",
                         "name": "id",
                         "in": "path",
@@ -270,7 +270,7 @@
                 "summary": "Delete a blog post",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Blog ID",
                         "name": "id",
                         "in": "path",
@@ -317,7 +317,7 @@
                 "summary": "List all comments for a blog post",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Blog ID",
                         "name": "id",
                         "in": "path",
@@ -364,7 +364,7 @@
                 "summary": "Add a comment to a blog post",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "Blog ID",
                         "name": "id",
                         "in": "path",
@@ -442,7 +442,7 @@
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "title": {
                     "type": "string"
@@ -462,13 +462,13 @@
                     "type": "string"
                 },
                 "created_at": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "post_id": {
-                    "type": "integer"
+                    "type": "string"
                 }
             }
         },
@@ -581,7 +581,7 @@
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"

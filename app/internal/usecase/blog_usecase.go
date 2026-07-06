@@ -6,6 +6,7 @@ import (
 	"app/internal/repository"
 	"errors"
 
+	"github.com/google/uuid"
 	"github.com/go-playground/validator/v10"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"
@@ -27,15 +28,20 @@ func NewBlogUseCase(db *gorm.DB, log *zerolog.Logger, validate *validator.Valida
 	}
 }
 
-func (c *BlogUseCase) Create(request *model.CreateBlogRequest, authorID int) (*model.BlogResponse, error) {
+func (c *BlogUseCase) Create(request *model.CreateBlogRequest, authorID string) (*model.BlogResponse, error) {
 	if err := c.Validate.Struct(request); err != nil {
 		return nil, err
+	}
+
+	authorUuid, err := uuid.Parse(authorID)
+	if err != nil {
+		return nil, errors.New("invalid author id")
 	}
 
 	blog := &entity.Blog{
 		Title:    request.Title,
 		Content:  request.Content,
-		AuthorID: authorID,
+		AuthorID: authorUuid,
 	}
 
 	if err := c.BlogRepository.Create(c.DB, blog); err != nil {
@@ -44,7 +50,7 @@ func (c *BlogUseCase) Create(request *model.CreateBlogRequest, authorID int) (*m
 	}
 
 	// Fetch again to get the preloaded author
-	createdBlog, err := c.BlogRepository.FindById(c.DB, blog.ID)
+	createdBlog, err := c.BlogRepository.FindById(c.DB, blog.ID.String())
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +58,7 @@ func (c *BlogUseCase) Create(request *model.CreateBlogRequest, authorID int) (*m
 	return c.toBlogResponse(createdBlog), nil
 }
 
-func (c *BlogUseCase) GetById(id int) (*model.BlogResponse, error) {
+func (c *BlogUseCase) GetById(id string) (*model.BlogResponse, error) {
 	blog, err := c.BlogRepository.FindById(c.DB, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -78,7 +84,7 @@ func (c *BlogUseCase) GetAll() ([]model.BlogResponse, error) {
 	return responses, nil
 }
 
-func (c *BlogUseCase) Update(request *model.UpdateBlogRequest, currentUserID int) (*model.BlogResponse, error) {
+func (c *BlogUseCase) Update(request *model.UpdateBlogRequest, currentUserID string) (*model.BlogResponse, error) {
 	if err := c.Validate.Struct(request); err != nil {
 		return nil, err
 	}
@@ -92,7 +98,7 @@ func (c *BlogUseCase) Update(request *model.UpdateBlogRequest, currentUserID int
 	}
 
 	// Authorization check
-	if blog.AuthorID != currentUserID {
+	if blog.AuthorID.String() != currentUserID {
 		return nil, errors.New("forbidden: you do not have permission to modify this post")
 	}
 
@@ -107,7 +113,7 @@ func (c *BlogUseCase) Update(request *model.UpdateBlogRequest, currentUserID int
 	return c.toBlogResponse(blog), nil
 }
 
-func (c *BlogUseCase) Delete(id int, currentUserID int) error {
+func (c *BlogUseCase) Delete(id string, currentUserID string) error {
 	blog, err := c.BlogRepository.FindById(c.DB, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -117,7 +123,7 @@ func (c *BlogUseCase) Delete(id int, currentUserID int) error {
 	}
 
 	// Authorization check
-	if blog.AuthorID != currentUserID {
+	if blog.AuthorID.String() != currentUserID {
 		return errors.New("forbidden: you do not have permission to delete this post")
 	}
 
@@ -133,20 +139,20 @@ func (c *BlogUseCase) toBlogResponse(blog *entity.Blog) *model.BlogResponse {
 	comments := make([]model.CommentResponse, len(blog.Comments))
 	for i, comment := range blog.Comments {
 		comments[i] = model.CommentResponse{
-			ID:         comment.ID,
-			PostID:     comment.PostID,
+			ID:         comment.ID.String(),
+			PostID:     comment.PostID.String(),
 			AuthorName: comment.AuthorName,
 			Content:    comment.Content,
-			CreatedAt:  comment.CreatedAt.Unix(),
+			CreatedAt:  comment.CreatedAt,
 		}
 	}
 
 	return &model.BlogResponse{
-		ID:      blog.ID,
+		ID:      blog.ID.String(),
 		Title:   blog.Title,
 		Content: blog.Content,
 		Author: model.UserResponse{
-			ID:        blog.Author.ID,
+			ID:        blog.Author.ID.String(),
 			Name:      blog.Author.Name,
 			Email:     blog.Author.Email,
 			CreatedAt: blog.Author.CreatedAt,
