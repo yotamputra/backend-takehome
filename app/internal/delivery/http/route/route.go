@@ -2,24 +2,29 @@ package route
 
 import (
 	"app/internal/delivery/http"
+	"app/internal/delivery/middleware"
 	"app/internal/model"
 	"encoding/json"
 	netHttp "net/http"
 
+	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 )
 
 type RouteConfig struct {
 	Mux    *netHttp.ServeMux
 	Config *viper.Viper
+	Log    *zerolog.Logger
 
 	AuthController *http.AuthController
+	BlogController *http.BlogController
 }
 
 func (c *RouteConfig) Setup() {
 	apiPrefix := "/api"
 
 	c.SetupAuthRoute(apiPrefix)
+	c.SetupPostRoute(apiPrefix)
 
 	c.Mux.HandleFunc("/health", HealthCheck)
 
@@ -39,6 +44,20 @@ func (c *RouteConfig) SetupAuthRoute(apiPrefix string) {
 
 	c.Mux.HandleFunc(authPrefix+"/register", c.AuthController.Register)
 	c.Mux.HandleFunc(authPrefix+"/login", c.AuthController.Login)
+}
+
+func (c *RouteConfig) SetupPostRoute(apiPrefix string) {
+	postPrefix := apiPrefix + "/posts"
+	authMiddleware := middleware.NewAuthMiddleware(c.Config, c.Log)
+
+	// Public routes
+	c.Mux.HandleFunc("GET "+postPrefix, c.BlogController.GetAll)
+	c.Mux.HandleFunc("GET "+postPrefix+"/{id}", c.BlogController.GetById)
+
+	// Protected routes
+	c.Mux.Handle("POST "+postPrefix, authMiddleware.Handle(netHttp.HandlerFunc(c.BlogController.Create)))
+	c.Mux.Handle("PUT "+postPrefix+"/{id}", authMiddleware.Handle(netHttp.HandlerFunc(c.BlogController.Update)))
+	c.Mux.Handle("DELETE "+postPrefix+"/{id}", authMiddleware.Handle(netHttp.HandlerFunc(c.BlogController.Delete)))
 }
 
 // HealthCheck godoc

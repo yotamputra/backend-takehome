@@ -1,5 +1,31 @@
 basePath: /
 definitions:
+  model.BlogResponse:
+    properties:
+      author:
+        $ref: '#/definitions/model.UserResponse'
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.CreateBlogRequest:
+    properties:
+      content:
+        type: string
+      title:
+        maxLength: 255
+        type: string
+    required:
+    - content
+    - title
+    type: object
   model.LoginRequest:
     properties:
       email:
@@ -39,6 +65,17 @@ definitions:
     - name
     - password
     type: object
+  model.UpdateBlogRequest:
+    properties:
+      content:
+        type: string
+      title:
+        maxLength: 255
+        type: string
+    required:
+    - content
+    - title
+    type: object
   model.UserResponse:
     properties:
       created_at:
@@ -55,6 +92,24 @@ definitions:
   model.WebResponse-any:
     properties:
       data: {}
+      errors: {}
+      message:
+        type: string
+    type: object
+  model.WebResponse-array_model_BlogResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.BlogResponse'
+        type: array
+      errors: {}
+      message:
+        type: string
+    type: object
+  model.WebResponse-model_BlogResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.BlogResponse'
       errors: {}
       message:
         type: string
@@ -134,6 +189,145 @@ paths:
       summary: Register a new user
       tags:
       - auth
+  /api/posts:
+    get:
+      description: List all blog posts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.WebResponse-array_model_BlogResponse'
+      summary: List all blog posts
+      tags:
+      - posts
+    post:
+      consumes:
+      - application/json
+      description: Create a new blog post
+      parameters:
+      - description: Create Blog Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateBlogRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.WebResponse-model_BlogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Create a new blog post
+      tags:
+      - posts
+  /api/posts/{id}:
+    delete:
+      description: Delete a blog post
+      parameters:
+      - description: Blog ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Delete a blog post
+      tags:
+      - posts
+    get:
+      description: Get a blog post by ID
+      parameters:
+      - description: Blog ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.WebResponse-model_BlogResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+      summary: Get a blog post by ID
+      tags:
+      - posts
+    put:
+      consumes:
+      - application/json
+      description: Update a blog post
+      parameters:
+      - description: Blog ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Blog Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateBlogRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.WebResponse-model_BlogResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+      security:
+      - BearerAuth: []
+      summary: Update a blog post
+      tags:
+      - posts
   /health:
     get:
       description: Check if the server is running
@@ -145,6 +339,7 @@ paths:
       - health
 securityDefinitions:
   BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
     in: header
     name: Authorization
     type: apiKey

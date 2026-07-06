@@ -24,18 +24,23 @@ type BootstrapConfig struct {
 func Bootstrap(config *BootstrapConfig) {
 	// Repositories
 	userRepository := repository.NewUserRepository(config.Log)
+	blogRepository := repository.NewBlogRepository(config.Log)
 
 	// UseCases
 	authUseCase := usecase.NewAuthUseCase(config.DB, config.Log, config.Validate, userRepository, config.Config)
+	blogUseCase := usecase.NewBlogUseCase(config.DB, config.Log, config.Validate, blogRepository)
 
 	// Controllers
 	authController := http.NewAuthController(authUseCase, config.Log)
+	blogController := http.NewBlogController(blogUseCase, config.Log)
 
 	// Routes
 	routeConfig := route.RouteConfig{
 		Mux:            config.Mux,
 		Config:         config.Config,
+		Log:            config.Log,
 		AuthController: authController,
+		BlogController: blogController,
 	}
 	routeConfig.Setup()
 }

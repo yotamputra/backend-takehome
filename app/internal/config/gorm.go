@@ -45,6 +45,7 @@ func NewDatabase(v *viper.Viper, log *zerolog.Logger) *gorm.DB {
 
 		err = db.AutoMigrate(
 			&entity.User{},
+			&entity.Blog{},
 		)
 
 		if err != nil {

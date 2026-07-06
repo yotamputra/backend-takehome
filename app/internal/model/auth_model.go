@@ -16,3 +16,7 @@ type LoginResponse struct {
 	ExpiresAt int64        `json:"expires_at"`
 	User      UserResponse `json:"user"`
 }
+
+type Auth struct {
+	ID int `json:"id"`
+}
