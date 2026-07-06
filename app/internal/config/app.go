@@ -22,17 +22,6 @@ type BootstrapConfig struct {
 }
 
 func Bootstrap(config *BootstrapConfig) {
-	// Add health check route
-	config.Mux.HandleFunc("/health", func(w netHttp.ResponseWriter, r *netHttp.Request) {
-		if r.Method != netHttp.MethodGet {
-			netHttp.Error(w, "Method Not Allowed", netHttp.StatusMethodNotAllowed)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(netHttp.StatusOK)
-		w.Write([]byte(`{"status": "ok"}`))
-	})
-
 	// Repositories
 	userRepository := repository.NewUserRepository(config.Log)
 

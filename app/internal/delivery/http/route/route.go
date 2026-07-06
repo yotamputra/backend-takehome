@@ -21,6 +21,8 @@ func (c *RouteConfig) Setup() {
 
 	c.SetupAuthRoute(apiPrefix)
 
+	c.Mux.HandleFunc("/health", HealthCheck)
+
 	c.Mux.HandleFunc("/", func(w netHttp.ResponseWriter, r *netHttp.Request) {
 		msg := "Error"
 		w.Header().Set("Content-Type", "application/json")
@@ -37,4 +39,20 @@ func (c *RouteConfig) SetupAuthRoute(apiPrefix string) {
 
 	c.Mux.HandleFunc(authPrefix+"/register", c.AuthController.Register)
 	c.Mux.HandleFunc(authPrefix+"/login", c.AuthController.Login)
+}
+
+// HealthCheck godoc
+// @Summary      Health Check
+// @Description  Check if the server is running
+// @Tags         health
+// @Produce      json
+// @Router       /health [get]
+func HealthCheck(w netHttp.ResponseWriter, r *netHttp.Request) {
+	if r.Method != netHttp.MethodGet {
+		netHttp.Error(w, "Method Not Allowed", netHttp.StatusMethodNotAllowed)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(netHttp.StatusOK)
+	w.Write([]byte(`{"status": "ok"}`))
 }

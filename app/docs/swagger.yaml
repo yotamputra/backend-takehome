@@ -134,6 +134,15 @@ paths:
       summary: Register a new user
       tags:
       - auth
+  /health:
+    get:
+      description: Check if the server is running
+      produces:
+      - application/json
+      responses: {}
+      summary: Health Check
+      tags:
+      - health
 securityDefinitions:
   BearerAuth:
     in: header
