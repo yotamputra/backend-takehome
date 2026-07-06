@@ -89,3 +89,6 @@ Once the prerequisites are ready:
 ## Submission Instructions
 
 Push your code to a Git repository and send us the link.
+
+## Notes 
+Swagger API documentation is available at [http://localhost:8080/swagger/](http://localhost:8080/swagger/).
