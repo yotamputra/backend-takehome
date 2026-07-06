@@ -5,7 +5,9 @@ import (
 	"app/internal/model"
 	"app/internal/usecase"
 	"encoding/json"
+	"math"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/rs/zerolog"
@@ -87,16 +89,40 @@ func (c *BlogController) GetById(w http.ResponseWriter, r *http.Request) {
 // @Description  List all blog posts
 // @Tags         posts
 // @Produce      json
+// @Param        page    query     int  false  "Page number"  default(1)
+// @Param        size    query     int  false  "Page size"    default(10)
 // @Success      200 {object} model.WebResponse[[]model.BlogResponse]
 // @Router       /api/posts [get]
 func (c *BlogController) GetAll(w http.ResponseWriter, r *http.Request) {
-	responses, err := c.BlogUseCase.GetAll()
+	pageStr := r.URL.Query().Get("page")
+	sizeStr := r.URL.Query().Get("size")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	size, err := strconv.Atoi(sizeStr)
+	if err != nil || size < 1 {
+		size = 10
+	}
+
+	responses, total, err := c.BlogUseCase.GetAll(page, size)
 	if err != nil {
 		c.jsonResponse(w, http.StatusInternalServerError, model.WebResponse[any]{Errors: err.Error()})
 		return
 	}
 
-	c.jsonResponse(w, http.StatusOK, model.WebResponse[[]model.BlogResponse]{Data: responses})
+	totalPage := int(math.Ceil(float64(total) / float64(size)))
+
+	c.jsonResponse(w, http.StatusOK, model.WebResponse[[]model.BlogResponse]{
+		Data: responses,
+		Paging: &model.PageMetadata{
+			Page:      page,
+			Size:      size,
+			TotalItem: total,
+			TotalPage: totalPage,
+		},
+	})
 }
 
 // Update godoc

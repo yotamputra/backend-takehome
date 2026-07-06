@@ -1,9 +1,17 @@
 package model
 
+type PageMetadata struct {
+	Page      int   `json:"page"`
+	Size      int   `json:"size"`
+	TotalItem int64 `json:"total_item"`
+	TotalPage int   `json:"total_page"`
+}
+
 type WebResponse[T any] struct {
-	Data    T       `json:"data"`
-	Message *string `json:"message,omitempty"`
-	Errors  any     `json:"errors,omitempty"`
+	Data    T             `json:"data"`
+	Paging  *PageMetadata `json:"paging,omitempty"`
+	Message *string       `json:"message,omitempty"`
+	Errors  any           `json:"errors,omitempty"`
 }
 
 func Ok[T any](data T) WebResponse[T] {

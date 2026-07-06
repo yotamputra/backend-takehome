@@ -105,6 +105,22 @@ const docTemplate = `{
                     "posts"
                 ],
                 "summary": "List all blog posts",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -538,6 +554,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PageMetadata": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "total_item": {
+                    "type": "integer"
+                },
+                "total_page": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.RegisterRequest": {
             "type": "object",
             "required": [
@@ -604,6 +637,9 @@ const docTemplate = `{
                 "errors": {},
                 "message": {
                     "type": "string"
+                },
+                "paging": {
+                    "$ref": "#/definitions/model.PageMetadata"
                 }
             }
         },
@@ -619,6 +655,9 @@ const docTemplate = `{
                 "errors": {},
                 "message": {
                     "type": "string"
+                },
+                "paging": {
+                    "$ref": "#/definitions/model.PageMetadata"
                 }
             }
         },
@@ -634,6 +673,9 @@ const docTemplate = `{
                 "errors": {},
                 "message": {
                     "type": "string"
+                },
+                "paging": {
+                    "$ref": "#/definitions/model.PageMetadata"
                 }
             }
         },
@@ -646,6 +688,9 @@ const docTemplate = `{
                 "errors": {},
                 "message": {
                     "type": "string"
+                },
+                "paging": {
+                    "$ref": "#/definitions/model.PageMetadata"
                 }
             }
         },
@@ -658,6 +703,9 @@ const docTemplate = `{
                 "errors": {},
                 "message": {
                     "type": "string"
+                },
+                "paging": {
+                    "$ref": "#/definitions/model.PageMetadata"
                 }
             }
         },
@@ -670,6 +718,9 @@ const docTemplate = `{
                 "errors": {},
                 "message": {
                     "type": "string"
+                },
+                "paging": {
+                    "$ref": "#/definitions/model.PageMetadata"
                 }
             }
         },
@@ -682,6 +733,9 @@ const docTemplate = `{
                 "errors": {},
                 "message": {
                     "type": "string"
+                },
+                "paging": {
+                    "$ref": "#/definitions/model.PageMetadata"
                 }
             }
         }

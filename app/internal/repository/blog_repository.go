@@ -29,12 +29,19 @@ func (r *BlogRepository) FindById(db *gorm.DB, id string) (*entity.Blog, error) 
 	return &blog, nil
 }
 
-func (r *BlogRepository) FindAll(db *gorm.DB) ([]entity.Blog, error) {
+func (r *BlogRepository) FindAll(db *gorm.DB, page, size int) ([]entity.Blog, int64, error) {
 	var blogs []entity.Blog
-	if err := db.Preload("Author").Preload("Comments").Find(&blogs).Error; err != nil {
-		return nil, err
+	var total int64
+
+	if err := db.Model(&entity.Blog{}).Count(&total).Error; err != nil {
+		return nil, 0, err
 	}
-	return blogs, nil
+
+	offset := (page - 1) * size
+	if err := db.Preload("Author").Preload("Comments").Offset(offset).Limit(size).Find(&blogs).Error; err != nil {
+		return nil, 0, err
+	}
+	return blogs, total, nil
 }
 
 func (r *BlogRepository) Update(db *gorm.DB, blog *entity.Blog) error {

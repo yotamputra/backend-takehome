@@ -70,10 +70,10 @@ func (c *BlogUseCase) GetById(id string) (*model.BlogResponse, error) {
 	return c.toBlogResponse(blog), nil
 }
 
-func (c *BlogUseCase) GetAll() ([]model.BlogResponse, error) {
-	blogs, err := c.BlogRepository.FindAll(c.DB)
+func (c *BlogUseCase) GetAll(page, size int) ([]model.BlogResponse, int64, error) {
+	blogs, total, err := c.BlogRepository.FindAll(c.DB, page, size)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	responses := make([]model.BlogResponse, len(blogs))
@@ -81,7 +81,7 @@ func (c *BlogUseCase) GetAll() ([]model.BlogResponse, error) {
 		responses[i] = *c.toBlogResponse(&blog)
 	}
 
-	return responses, nil
+	return responses, total, nil
 }
 
 func (c *BlogUseCase) Update(request *model.UpdateBlogRequest, currentUserID string) (*model.BlogResponse, error) {
