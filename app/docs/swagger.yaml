@@ -1,11 +1,139 @@
 basePath: /
+definitions:
+  model.LoginRequest:
+    properties:
+      email:
+        maxLength: 100
+        type: string
+      password:
+        maxLength: 100
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  model.LoginResponse:
+    properties:
+      expires_at:
+        type: integer
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/model.UserResponse'
+    type: object
+  model.RegisterRequest:
+    properties:
+      email:
+        maxLength: 100
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      password:
+        maxLength: 100
+        minLength: 6
+        type: string
+    required:
+    - email
+    - name
+    - password
+    type: object
+  model.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.WebResponse-any:
+    properties:
+      data: {}
+      errors: {}
+      message:
+        type: string
+    type: object
+  model.WebResponse-model_LoginResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.LoginResponse'
+      errors: {}
+      message:
+        type: string
+    type: object
+  model.WebResponse-model_UserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.UserResponse'
+      errors: {}
+      message:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
   description: This is a sample blog platform API.
   title: Backend Takehome API
   version: "1.0"
-paths: {}
+paths:
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login and receive token
+      parameters:
+      - description: Login Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.WebResponse-model_LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+      summary: Login
+      tags:
+      - auth
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: Register Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.WebResponse-model_UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.WebResponse-any'
+      summary: Register a new user
+      tags:
+      - auth
 securityDefinitions:
   BearerAuth:
     in: header

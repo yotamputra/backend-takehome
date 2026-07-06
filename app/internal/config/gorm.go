@@ -1,6 +1,7 @@
 package config
 
 import (
+	"app/internal/entity"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -38,6 +39,20 @@ func NewDatabase(v *viper.Viper, log *zerolog.Logger) *gorm.DB {
 	connection.SetMaxIdleConns(idleConnection)
 	connection.SetMaxOpenConns(maxConnection)
 	connection.SetConnMaxLifetime(time.Second * time.Duration(maxLifeTimeConnection))
+
+	if v.GetString("APP_ENV") == "development" {
+		log.Info().Msg("Synchronizing database schemas (AutoMigrate)...")
+
+		err = db.AutoMigrate(
+			&entity.User{},
+		)
+
+		if err != nil {
+			log.Error().Err(err).Msg("Database synchronization failed")
+		} else {
+			log.Info().Msg("Database schemas synchronized successfully")
+		}
+	}
 
 	log.Info().Msg("✅ Connection to MySQL established via GORM")
 
